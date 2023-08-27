@@ -102,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'main.AdvUser'
+LOGOUT_REDIRECT_URL = 'main:index'
 
 
 # Internationalization

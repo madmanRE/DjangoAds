@@ -23,14 +23,14 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <div class="navbar-nav">
                     {% if user.is_authenticated %}
-                    <div class="nav-item dropdown" style="margin-right: 50px">
+                    <div class="nav-item dropdown" style="margin-right: 100px">
                         <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown" href="#">Мой профиль</a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">Мои объявления</a>
-                            <a class="dropdown-item" href="#">Изменить профиль</a>
-                            <a class="dropdown-item" href="#">Изменить пароль</a>
+                            <a class="dropdown-item" href="{% url 'main:profile' %}">Мои объявления</a>
+                            <a class="dropdown-item" href="{% url 'main:profile_edit' %}">Редактировать профиль</a>
+                            <a class="dropdown-item" href="{% url 'main:password_edit' %}">Изменить пароль</a>
                             <hr class="dropdown-divider">
-                            <form class="px-3">
+                            <form class="px-3" action="{% url 'main:logout' %}">
                                 {% csrf_token %}
                                 {% bootstrap_button 'Выход' button_class='btn-danger' %}
                             </form>

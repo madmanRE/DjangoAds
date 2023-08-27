@@ -1,0 +1,78 @@
+{% load django_bootstrap5 %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}Django Ads{% endblock %}</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+    {% bootstrap_javascript %}
+    <link rel="shortcut icon" href="{% static 'main/img/favicon.png' %}" type="image/png">
+</head>
+<body class="container-fluid bg-light bg-gradient">
+    <nav class="row navbar navbar-expand-md bg-dark bg-gradient">
+        <div class="col container">
+            <a class="navbar-brand text-white" href="{% url 'main:index' %}">DjangoAds</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <div class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <div class="nav-item dropdown" style="margin-right: 50px">
+                        <a class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown" href="#">Мой профиль</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Мои объявления</a>
+                            <a class="dropdown-item" href="#">Изменить профиль</a>
+                            <a class="dropdown-item" href="#">Изменить пароль</a>
+                            <hr class="dropdown-divider">
+                            <form class="px-3">
+                                {% csrf_token %}
+                                {% bootstrap_button 'Выход' button_class='btn-danger' %}
+                            </form>
+                            <hr class="dropdown-divider">
+                            <a class="dropdown-item" href="#">Удалить профиль</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a class="nav-link text-white" href="#">Регистрация</a>
+                    <a class="nav-link text-white" href="{% url 'main:login' %}">Вход</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        <nav class="col-md-auto nav flex-column" style="background-color: rgba(128, 128, 128, 0.5); border-radius: 3px">
+            <span class="nav-link root text-dark">Хобби и развлечения</span>
+            <a class="nav-link text-dark" href="#">Книги</a>
+            <a class="nav-link text-dark" href="#">Игрушки</a>
+            <a class="nav-link text-dark" href="#">Настольные игры</a>
+            <a class="nav-link text-dark" href="#">Коллекционирование</a>
+            <a class="nav-link text-dark" href="#">Вязание</a>
+            <a class="nav-link text-dark" href="{% url 'main:other' page='about' %}">О сайте</a>
+        </nav>
+        <main class="col py-2">
+            {% bootstrap_messages %}
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    <hr>
+    <footer class="mt-3 content-right d-flex justify-content-end">
+        <a href="#"><img class="social_logo" src="{% static 'main/img/free-icon-instagram-2111491.png' %}"></a>
+        <a href="#"><img class="social_logo" src="{% static 'main/img/free-icon-telegram-2111710.png' %}"></a>
+        <a href="#"><img class="social_logo" src="{% static 'main/img/free-icon-viber-2111757.png' %}"></a>
+        <a href="#"><img class="social_logo" src="{% static 'main/img/free-icon-vk-2111765.png' %}"></a>
+        <a href="#"><img class="social_logo" src="{% static 'main/img/free-icon-whatsapp-2111774.png' %}"></a>
+    </footer>
+</body>
+
+{% block script%}
+{% endblock %}
+
+</html>

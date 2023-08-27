@@ -1,0 +1,18 @@
+body {
+    background-repeat: no-repeat;
+}
+
+main {
+    min-height: 80vh;
+}
+
+
+.root {
+    font-size: larger;
+}
+
+.social_logo {
+    width: 30px;
+    margin: 3px;
+    padding: 2px;
+}

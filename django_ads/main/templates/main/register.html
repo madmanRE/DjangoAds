@@ -2,21 +2,16 @@
 
 {% load django_bootstrap5 %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}Регистрация{% endblock %}
 
 {% block content %}
-<h1>Вход</h1>
-{% if user.is_authenticated %}
-<p>Вы уже выполнили вход</p>
-{% else %}
+<h1>Регистрация пользователя</h1>
 <div class="custom_form">
     <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         <input type="hidden" name="next" value="{{next}}">
-        {% bootstrap_button 'Войти' %}
+        {% bootstrap_button 'Зарегистрироваться' %}
     </form>
 </div>
-{% endif %}
 {% endblock %}
-

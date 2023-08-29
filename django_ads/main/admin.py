@@ -1,8 +1,9 @@
 from django.contrib import admin
 import datetime
 
-from .models import AdvUser
+from .models import AdvUser, SubRubric, SuperRubric, Bb, AdditionalImage
 from .utilities import send_activation_notification
+from .forms import SubRubricForm
 
 
 @admin.action(description='Отправить письма с требованиями пройти активацию')
@@ -49,5 +50,32 @@ class AdvUserAdmin(admin.ModelAdmin):
     actions = (send_notifications,)
 
 
-admin.site.register(AdvUser, AdvUserAdmin)
+class SubRubricInline(admin.TabularInline):
+    model = SubRubric
 
+
+class SuperRubricAdmin(admin.ModelAdmin):
+    exclude = ('super_rubric',)
+    inlines = (SubRubricInline,)
+
+
+class SubRubricAdmin(admin.ModelAdmin):
+    form = SubRubricForm
+
+
+class AdditionalImageInline(admin.TabularInline):
+    model = AdditionalImage
+
+
+class BbAdmin(admin.ModelAdmin):
+    list_display = ('rubric', 'title', 'content', 'author', 'created_at')
+    fields = (
+        ('rubric', 'author'), 'title', 'content', 'price', 'contacts', 'image', 'is_active'
+    )
+    inlines = (AdditionalImageInline,)
+
+
+admin.site.register(Bb, BbAdmin)
+admin.site.register(SubRubric, SubRubricAdmin)
+admin.site.register(SuperRubric, SuperRubricAdmin)
+admin.site.register(AdvUser, AdvUserAdmin)

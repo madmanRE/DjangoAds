@@ -1,5 +1,5 @@
 from .views import other_page, CustomLoginView, CustomLogoutView, profile, ProfileEditView, PasswordEditView, \
-    RegisterView, RegisterDoneView, user_activate, ProfileDeleteView
+    RegisterView, RegisterDoneView, user_activate, ProfileDeleteView, rubric_bbs
 from django.urls import path
 
 from .views import index
@@ -16,6 +16,7 @@ urlpatterns = [
     path('accounts/profile/delete/', ProfileDeleteView.as_view(), name='profile_delete'),
     path('accounts/profile/edit/', ProfileEditView.as_view(), name='profile_edit'),
     path('accounts/profile/', profile, name='profile'),
+    path('<int:pk>/', rubric_bbs, name='rubric_bbs'),
     path('<str:page>/', other_page, name='other'),
     path("", index, name='index')
 ]

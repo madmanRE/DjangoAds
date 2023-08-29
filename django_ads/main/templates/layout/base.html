@@ -48,13 +48,14 @@
     </nav>
     <div class="row">
         <nav class="col-md-auto nav flex-column" style="background-color: rgba(128, 128, 128, 0.5); border-radius: 3px">
-            <span class="nav-link root text-dark">Хобби и развлечения</span>
-            <a class="nav-link text-dark" href="#">Книги</a>
-            <a class="nav-link text-dark" href="#">Игрушки</a>
-            <a class="nav-link text-dark" href="#">Настольные игры</a>
-            <a class="nav-link text-dark" href="#">Коллекционирование</a>
-            <a class="nav-link text-dark" href="#">Вязание</a>
-            <a class="nav-link text-dark" href="{% url 'main:other' page='about' %}">О сайте</a>
+            {% for rubric in rubrics %}
+            {% ifchanged rubric.super_rubric.pk %}
+            <span class="nav_link root text-dark">{{ rubric.super_rubric.name }}</span>
+            {% endifchanged %}
+            <a class="nav-link text-dark" href="{% url 'main:rubric_bbs' pk=rubric.pk %}">
+               {{ rubric.name }}</a>
+            {% endfor %}
+            <a class="nav-link root text-dark" href="{% url 'main:other' page='about' %}">О сайте</a>
         </nav>
         <main class="col py-2">
             {% bootstrap_messages %}

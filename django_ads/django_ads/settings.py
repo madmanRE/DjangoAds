@@ -100,8 +100,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'main.AdvUser'
-LOGOUT_REDIRECT_URL = 'main:index'
+AUTH_USER_MODEL = "main.AdvUser"
+LOGOUT_REDIRECT_URL = "main:index"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -119,22 +119,22 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-MEDIA_ROOT = BASE_DIR / 'media'
-MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 THUMBNAIL_ALIASES = {
     "": {
-        'default': {
-            'size': (96, 96),
-            'crop': 'scale',
+        "default": {
+            "size": (96, 96),
+            "crop": "scale",
         },
     },
 }
-THUMBNAIL_BASEDIR = 'thumbnails'
+THUMBNAIL_BASEDIR = "thumbnails"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

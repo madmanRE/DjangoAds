@@ -18,8 +18,16 @@ main {
 }
 
 .custom_form {
-width: 500px;
-border: 0.3px solid Silver;
-padding: 10px;
-border-radius: 5px;
+    width: 500px;
+    border: 0.3px solid Silver;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+img.main-image {
+    width: 300px;
+}
+
+img.additional-image {
+    width: 180px;
 }

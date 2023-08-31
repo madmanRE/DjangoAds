@@ -1,9 +1,19 @@
 {% extends 'layout/base.html' %}
+
 {% load thumbnail %}
 {% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ rubric }}{% endblock %}
 
 {% block content %}
-<h1 class="display-1 text-center">Объявления</h1>
+<h2 class="mb-2">{{ rubric }}</h2>
+<form class="row row-cols-md-auto justify-content-end">
+    {% bootstrap_field form.keyword show_label=False wrapper_class='col-12' %}
+    <div class="col-12">
+        {% bootstrap_button 'Искать' %}
+    </div>
+</form>
 {% if bbs %}
 <div class="vstack gap-3 my-4">
     {% for bb in bbs %}
@@ -28,5 +38,6 @@
     </div>
     {% endfor %}
 </div>
+{% bootstrap_pagination page url=keyword %}
 {% endif %}
 {% endblock %}

@@ -12,26 +12,30 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.core.signing import BadSignature
+from django.core.paginator import Paginator
+from django.db.models import Q
 
-from .models import AdvUser
-from .forms import ProfileEditForm, RegisterForm
+from .models import AdvUser, SubRubric, Bb
+from .forms import ProfileEditForm, RegisterForm, SearchForm
 from .utilities import signer
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    bbs = Bb.objects.filter(is_active=True).select_related("rubric")[:10]
+    context = {"bbs": bbs}
+    return render(request, "main/index.html", context)
 
 
 def other_page(request, page):
     try:
-        template = get_template('main/' + page + '.html')
+        template = get_template("main/" + page + ".html")
     except TemplateDoesNotExist:
         raise Http404
     return HttpResponse(template.render(request=request))
 
 
 class CustomLoginView(LoginView):
-    template_name = 'main/login.html'
+    template_name = "main/login.html"
 
 
 class CustomLogoutView(LogoutView):
@@ -40,15 +44,15 @@ class CustomLogoutView(LogoutView):
 
 @login_required
 def profile(request):
-    return render(request, 'main/profile.html')
+    return render(request, "main/profile.html")
 
 
 class ProfileEditView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AdvUser
-    template_name = 'main/profile_edit.html'
+    template_name = "main/profile_edit.html"
     form_class = ProfileEditForm
-    success_url = reverse_lazy('main:profile')
-    success_message = 'Данный изменены успешно'
+    success_url = reverse_lazy("main:profile")
+    success_message = "Данный изменены успешно"
 
     def setup(self, request, *args, **kwargs):
         self.user_id = request.user.pk
@@ -61,32 +65,32 @@ class ProfileEditView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
 
 class PasswordEditView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
-    template_name = 'main/password_edit.html'
-    success_url = reverse_lazy('main:profile')
-    success_message = 'Пароль успешно обновлен'
+    template_name = "main/password_edit.html"
+    success_url = reverse_lazy("main:profile")
+    success_message = "Пароль успешно обновлен"
 
 
 class RegisterView(CreateView):
     model = AdvUser
-    template_name = 'main/register.html'
+    template_name = "main/register.html"
     form_class = RegisterForm
-    success_url = reverse_lazy('main:register_done')
+    success_url = reverse_lazy("main:register_done")
 
 
 class RegisterDoneView(TemplateView):
-    template_name = 'main/register_done.html'
+    template_name = "main/register_done.html"
 
 
 def user_activate(request, sign):
     try:
         username = signer.unsign(sign)
     except BadSignature:
-        return render(request, 'main/activation_failed.html')
+        return render(request, "main/activation_failed.html")
     user = get_object_or_404(AdvUser, username=username)
     if user.is_activated:
-        template = 'main/activation_done.html'
+        template = "main/activation_done.html"
     else:
-        template = 'main/activation_done.html'
+        template = "main/activation_done.html"
         user.is_active = True
         user.is_activated = True
         user.save()
@@ -95,9 +99,9 @@ def user_activate(request, sign):
 
 class ProfileDeleteView(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     model = AdvUser
-    template_name = 'main/profile_delete.html'
-    success_url = reverse_lazy('main:index')
-    success_message = 'Пользователь удален'
+    template_name = "main/profile_delete.html"
+    success_url = reverse_lazy("main:index")
+    success_message = "Пользователь удален"
 
     def setup(self, request, *args, **kwargs):
         self.user_id = request.user.pk
@@ -114,4 +118,27 @@ class ProfileDeleteView(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
 
 
 def rubric_bbs(request, pk):
-    pass
+    rubric = get_object_or_404(SubRubric, pk=pk)
+    bbs = Bb.objects.filter(is_active=True, rubric=pk)
+    if "keyword" in request.GET:
+        keyword = request.GET["keyword"]
+        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+        bbs = bbs.filter(q)
+    else:
+        keyword = ""
+    form = SearchForm(initial={"keyword": keyword})
+    paginator = Paginator(bbs, 2)
+    if "page" in request.GET:
+        page_num = request.GET["page"]
+    else:
+        page_num = 1
+    page = paginator.get_page(page_num)
+    context = {"rubric": rubric, "page": page, "bbs": page.object_list, "form": form}
+    return render(request, "main/rubric_bbs.html", context)
+
+
+def bb_detail(request, rubric_pk, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    context = {"bb": bb, "ais": ais}
+    return render(request, "main/bb_detail.html", context)

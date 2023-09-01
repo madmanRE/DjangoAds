@@ -2,9 +2,10 @@
 
 {% load django_bootstrap5 %}
 
-{% block title %}{{ bb.title }} - {{ bb.rubric.name }}{% endblock %}
+{% block title %}Удаление объявления - Профиль пользователя{% endblock %}
 
 {% block content %}
+<h2>Правка объявления</h2>
 <div class="row mt-3">
     {% if bb.image %}
     <div class="col-md-auto">
@@ -19,16 +20,8 @@
         <p class="text-end fst-italic">Добавлено {{ bb.created_at }}</p>
     </div>
 </div>
-{% if ais %}
-<div class="d-flex justify-content-between flex-wrap mt-5">
-    {% for ai in ais %}
-    <div class="d-flex justify-content-center align-items-center">
-        <img class="additional-image" src="{{ ai.image.url }}">
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-<p><a href="{% url 'main:rubric_bbs' pk=bb.rubric.pk %}{{ all }}">
-      Назад</a></p>
-
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_button 'Удалить' button_class='btn-danger' %}
+</form>
 {% endblock %}

@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.base import TemplateView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -16,7 +18,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import AdvUser, SubRubric, Bb
-from .forms import ProfileEditForm, RegisterForm, SearchForm
+from .forms import ProfileEditForm, RegisterForm, SearchForm, BbForm, AIFormSet
 from .utilities import signer
 
 
@@ -44,7 +46,9 @@ class CustomLogoutView(LogoutView):
 
 @login_required
 def profile(request):
-    return render(request, "main/profile.html")
+    bbs = Bb.objects.filter(author=request.user.pk)
+    context = {"bbs": bbs}
+    return render(request, "main/profile.html", context)
 
 
 class ProfileEditView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -142,3 +146,61 @@ def bb_detail(request, rubric_pk, pk):
     ais = bb.additionalimage_set.all()
     context = {"bb": bb, "ais": ais}
     return render(request, "main/bb_detail.html", context)
+
+
+@login_required
+def profile_bb_detail(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    comments = Comment.objects.filter(bb=pk, is_active=True)
+    context = {"bb": bb, "ais": ais, "comments": comments}
+    return render(request, "main/profile_bb_detail.html.html", context)
+
+
+@login_required
+def profile_bb_add(request):
+    if request.method == "POST":
+        form = BbForm(request.POST, request.FILES)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, "Объявление добавлено")
+                return redirect("main:profile")
+    else:
+        form = BbForm(initial={"author": request.user.pk})
+        formset = AIFormSet()
+    context = {"form": form, "formset": formset}
+    return render(request, "main/profile_bb_add.html", context)
+
+
+@login_required
+def profile_bb_edit(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == "POST":
+        form = BbForm(request.POST, request.FILES, instance=bb)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, "Объявление исправлено")
+                return redirect("main:profile")
+    else:
+        form = BbForm(instance=bb)
+        formset = AIFormSet(instance=bb)
+    context = {"form": form, "formset": formset}
+    return render(request, "main/profile_bb_edit.html", context)
+
+
+@login_required
+def profile_bb_delete(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == "POST":
+        bb.delete()
+        messages.add_message(request, messages.SUCCESS, "Объявление удалено")
+        return redirect("main:profile")
+    else:
+        context = {"bb": bb}
+        return render(request, "main/profile_bb_delete.html", context)

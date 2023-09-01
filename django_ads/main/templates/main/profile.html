@@ -1,15 +1,45 @@
 {% extends 'layout/base.html' %}
 
+{% load thumbnail %}
+{% load static %}
+
 {% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
-<h1>Профиль пользователя {{user.username}}</h1>
-<div>
-    <p>Добрый день, {{user.username|capfirst }}!</p>
-</div>
-<hr>
+<h2>Профиль пользователя {{ user.username }}</h2>
 {% if user.first_name and user.last_name %}
-<p>Здравствуйте, {{user.first_name}} {{user.last_name}}</p>
+<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
+{% else %}
+<p>Здравствуйте!</p>
 {% endif %}
+<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
+{% if bbs %}
 <h3>Ваши объявления</h3>
+<div class="vstack gap-3 mt-4 mb-4">
+    {% for bb in bbs %}
+    <div class="card">
+        {% url 'main:bb_detail' rubric_pk=bb.rubric.pk pk=bb.pk as url %}
+        <div class="row p-3">
+            <a class="col-md-2" href="{{ url }}">
+                {% if bb.image %}
+                <img class="img-fluid" src="{% thumbnail bb.image 'default' %}">
+                {% else %}
+                <img class="img-fluid" src="{% static 'main/empty.jpg' %}">
+                {% endif %}
+            </a>
+            <div class="col-md-10 card-body">
+                <h3 class="card-title"><a href="{{ url }}">{{ bb.title }}</a></h3>
+                <div class="card-text mb-2">{{ bb.content }}</div>
+                <p class="card-text fw-bold">{{ bb.price }} руб.</p>
+                <p class="card-text text-end fst-italic">{{ bb.created_at }}</p>
+                <p class="card-text text-end">
+                    <a href="{% url 'main:profile_bb_edit' pk=bb.pk %}">Исправить</a>
+                    <a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

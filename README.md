@@ -1,3 +1,3 @@
 # DjangoAds
-***A board of ads with categories, registration, authentication, comments, searching, REST, etc***
+***A board of ads with categories, registration, authentication, and searching
 
